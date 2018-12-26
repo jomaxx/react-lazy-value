@@ -2,7 +2,7 @@ module.exports = lazyValue;
 
 function lazyValue(init) {
   let getValue = function() {
-    let promise = Promise.resolve(init());
+    let promise = init();
 
     getValue = function() {
       throw promise;
