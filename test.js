@@ -51,12 +51,12 @@ test("renders synchronous value", done => {
 
 test("touches value", () => {
   const value = 1;
-  const init = jest.fn(async () => value);
-  const lazy = lazyValue(init);
+  const init = jest.fn(() => value);
+  let lazy = lazyValue(init);
   expect(init).toHaveBeenCalledTimes(0);
-  lazyValue.touch(lazy);
-  lazyValue.touch(lazy);
+  lazy = lazyValue.touch(lazyValue.touch(lazy));
   expect(init).toHaveBeenCalledTimes(1);
+  expect(lazy.value).toBe(value);
 });
 
 class ErrorBoundary extends React.Component {

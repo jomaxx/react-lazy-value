@@ -42,6 +42,8 @@ function touch(lazy) {
   try {
     lazy.value;
   } catch (error) {}
+
+  return lazy;
 }
 
 function isThenable(thenable) {
