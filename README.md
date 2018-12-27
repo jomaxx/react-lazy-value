@@ -2,7 +2,7 @@
 
 Lazily evaluate a value during the render phase of your component.
 
-`react-lazy-value` can be used for [data fetching](#data-fetching), [code splitting](#code-splitting), [state management](#reducer), and other async use cases.
+`react-lazy-value` can be used for [data fetching](#data-fetching), [code splitting](#code-splitting), and with existing [state management](#reducer) solutions.
 
 ## Install
 
