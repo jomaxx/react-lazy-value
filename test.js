@@ -49,13 +49,13 @@ test("renders synchronous value", done => {
   });
 });
 
-test("preloads value", () => {
+test("touches value", () => {
   const value = 1;
   const init = jest.fn(async () => value);
   const lazy = lazyValue(init);
   expect(init).toHaveBeenCalledTimes(0);
-  lazyValue.preload(lazy);
-  lazyValue.preload(lazy);
+  lazyValue.touch(lazy);
+  lazyValue.touch(lazy);
   expect(init).toHaveBeenCalledTimes(1);
 });
 

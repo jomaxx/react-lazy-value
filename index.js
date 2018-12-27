@@ -1,5 +1,5 @@
 module.exports = lazyValue;
-module.exports.preload = preload;
+module.exports.touch = touch;
 
 function lazyValue(init) {
   let getValue = function() {
@@ -38,7 +38,7 @@ function lazyValue(init) {
   };
 }
 
-function preload(lazy) {
+function touch(lazy) {
   try {
     lazy.value;
   } catch (error) {}
