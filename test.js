@@ -4,87 +4,116 @@ const lazyValue = require("./");
 
 jest.spyOn(console, "error");
 
-function render(tree) {
-  ReactDOM.render(tree, document.createElement("div"));
-}
-
 test("renders fallback", done => {
-  const lazy = lazyValue(async () => null);
-
-  function Fallback() {
-    done();
-    return null;
-  }
-
-  function Test() {
-    lazy.value;
-    return null;
-  }
-
-  render(
-    React.createElement(
-      React.Suspense,
-      { fallback: React.createElement(Fallback) },
-      React.createElement(Test)
-    )
-  );
+  render({
+    lazy: lazyValue(async () => 1),
+    onFallback: done
+  });
 });
 
 test("renders value", done => {
   const value = {};
-  const lazy = lazyValue(async () => value);
 
-  function Test() {
-    expect(lazy.value).toBe(value);
-    done();
-    return null;
-  }
-
-  render(
-    React.createElement(
-      React.Suspense,
-      { fallback: null },
-      React.createElement(Test)
-    )
-  );
+  render({
+    lazy: lazyValue(async () => value),
+    onMount(result) {
+      expect(result).toBe(value);
+      done();
+    }
+  });
 });
 
 test("renders error", done => {
   console.error.mockReturnValueOnce();
 
   const value = new Error("error");
-  const lazy = lazyValue(async () => Promise.reject(value));
 
-  class ErrorBoundary extends React.Component {
-    static getDerivedStateFromError(error) {
-      return { error };
-    }
-
-    componentDidUpdate() {
-      expect(this.state.error).toBe(value);
+  render({
+    lazy: lazyValue(async () => Promise.reject(value)),
+    onError(error) {
+      expect(error).toBe(value);
       done();
     }
+  });
+});
 
-    render() {
-      if (this.state) return null;
-      return this.props.children;
+test("renders synchronous value", done => {
+  const value = {};
+
+  render({
+    lazy: lazyValue(() => value),
+    onMount(result) {
+      expect(result).toBe(value);
+      done();
     }
+  });
+});
+
+class ErrorBoundary extends React.Component {
+  static getDerivedStateFromError(error) {
+    return { error };
   }
 
-  function Test() {
-    lazy.value;
+  static get defaultProps() {
+    return {
+      onError() {}
+    };
+  }
+
+  componentDidUpdate() {
+    this.props.onError(this.state.error);
+  }
+
+  render() {
+    if (this.state) return null;
+    return this.props.children;
+  }
+}
+
+class Test extends React.Component {
+  static get defaultProps() {
+    return {
+      onMount() {}
+    };
+  }
+
+  componentDidMount() {
+    this.props.onMount(this.props.lazy.value);
+  }
+
+  render() {
+    this.props.lazy.value;
     return null;
   }
+}
 
-  render(
+class Fallback extends React.Component {
+  static get defaultProps() {
+    return {
+      onFallback() {}
+    };
+  }
+
+  componentDidMount() {
+    this.props.onFallback();
+  }
+
+  render() {
+    return null;
+  }
+}
+
+function render(props) {
+  ReactDOM.render(
     React.createElement(
       ErrorBoundary,
-      null,
+      props,
       React.createElement(
         React.Suspense,
-        { fallback: null },
-        React.createElement(Test)
+        { fallback: React.createElement(Fallback, props) },
+        React.createElement(Test, props)
       )
-    )
+    ),
+    document.createElement("div")
   );
-});
+}

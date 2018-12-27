@@ -2,24 +2,30 @@ module.exports = lazyValue;
 
 function lazyValue(init) {
   let getValue = function() {
-    let promise = init();
+    let value = init();
 
     getValue = function() {
-      throw promise;
+      return value;
     };
 
-    promise.then(
-      function(result) {
-        getValue = function() {
-          return result;
-        };
-      },
-      function(error) {
-        getValue = function() {
-          throw error;
-        };
-      }
-    );
+    if (isThenable(value)) {
+      getValue = function() {
+        throw value;
+      };
+
+      value.then(
+        function(result) {
+          getValue = function() {
+            return result;
+          };
+        },
+        function(error) {
+          getValue = function() {
+            throw error;
+          };
+        }
+      );
+    }
 
     return getValue();
   };
@@ -29,4 +35,12 @@ function lazyValue(init) {
       return getValue();
     }
   };
+}
+
+function isThenable(thenable) {
+  return (
+    thenable !== null &&
+    typeof thenable === "object" &&
+    typeof thenable.then === "function"
+  );
 }
