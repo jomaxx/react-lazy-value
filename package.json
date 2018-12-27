@@ -4,13 +4,30 @@
   "main": "index.js",
   "repository": "git@github.com:jomaxx/react-lazy-value.git",
   "author": "Jo Maxx Blake <jo.maxx.blake@gmail.com>",
+  "description": "Lazily evaluate a value during the render phase of your component.",
+  "keywords": [
+    "react",
+    "lazy",
+    "async",
+    "suspense",
+    "data fetching",
+    "code splitting",
+    "state management"
+  ],
+  "files": [
+    "index.js"
+  ],
   "license": "MIT",
   "scripts": {
     "prepublishOnly": "jest"
   },
   "devDependencies": {
     "jest": "^23.6.0",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0"
   }
 }

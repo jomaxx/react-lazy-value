@@ -1,6 +1,22 @@
 # react-lazy-value
 
-`react-lazy-value` allows you to lazily and asynchronously evaluate a value during the render phase of your component. It can be used for [data fetching](#data-fetching), [code splitting](#code-splitting), [state management](#reducer), and other async use cases.
+Lazily evaluate a value during the render phase of your component.
+
+`react-lazy-value` can be used for [data fetching](#data-fetching), [code splitting](#code-splitting), [state management](#reducer), and other async use cases.
+
+## Install
+
+### npm
+
+```bash
+npm install react-lazy-value react react-dom
+```
+
+### yarn
+
+```bash
+yarn add react-lazy-value react react-dom
+```
 
 ## Examples
 
@@ -84,7 +100,7 @@ function reducer(state, action) {
 }
 ```
 
-### Eager Execution
+### Eager Initialization
 
 ```js
 import lazyValue from "react-lazy-value";
@@ -100,8 +116,10 @@ const currentUser = lazyValue.touch(
 
 ## How does it work?
 
-`react-lazy-value` relies on [React Suspense](https://reactjs.org/docs/react-api.html#suspense) which lets components "wait" on a lazy value before rendering.
+### Async
 
-## JSON.stringify
+`react-lazy-value` relies on [React Suspense](https://reactjs.org/docs/react-api.html#suspense) when evaluating a promise (or thenable). Suspense lets components “wait” for something before rendering.
+
+### JSON.stringify
 
 The `lazy` object is treated as `undefined` when in a pending or error state.
