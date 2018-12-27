@@ -1,62 +1,54 @@
 const React = require("react");
 const ReactDOM = require("react-dom");
-const lazyValue = require("./");
+const lazyValue = require("../");
 
 jest.spyOn(console, "error");
 
-test("renders fallback", done => {
-  render({
-    lazy: lazyValue(async () => 1),
-    onFallback: done
+describe("ReactDOM renders", () => {
+  test("pending", done => {
+    render({
+      lazy: lazyValue(async () => 1),
+      onFallback: done
+    });
   });
-});
 
-test("renders value", done => {
-  const value = {};
+  test("resolved", done => {
+    const value = {};
 
-  render({
-    lazy: lazyValue(async () => value),
-    onMount(result) {
-      expect(result).toBe(value);
-      done();
-    }
+    render({
+      lazy: lazyValue(async () => value),
+      onMount(result) {
+        expect(result).toBe(value);
+        done();
+      }
+    });
   });
-});
 
-test("renders error", done => {
-  console.error.mockReturnValueOnce();
+  test("rejected", done => {
+    console.error.mockReturnValueOnce();
 
-  const value = new Error("error");
+    const value = new Error("error");
 
-  render({
-    lazy: lazyValue(async () => Promise.reject(value)),
-    onError(error) {
-      expect(error).toBe(value);
-      done();
-    }
+    render({
+      lazy: lazyValue(async () => Promise.reject(value)),
+      onError(error) {
+        expect(error).toBe(value);
+        done();
+      }
+    });
   });
-});
 
-test("renders synchronous value", done => {
-  const value = {};
+  test("value", done => {
+    const value = {};
 
-  render({
-    lazy: lazyValue(() => value),
-    onMount(result) {
-      expect(result).toBe(value);
-      done();
-    }
+    render({
+      lazy: lazyValue(() => value),
+      onMount(result) {
+        expect(result).toBe(value);
+        done();
+      }
+    });
   });
-});
-
-test("touches value", () => {
-  const value = 1;
-  const init = jest.fn(() => value);
-  let lazy = lazyValue(init);
-  expect(init).toHaveBeenCalledTimes(0);
-  lazy = lazyValue.touch(lazyValue.touch(lazy));
-  expect(init).toHaveBeenCalledTimes(1);
-  expect(lazy.value).toBe(value);
 });
 
 class ErrorBoundary extends React.Component {

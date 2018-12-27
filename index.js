@@ -2,6 +2,10 @@ module.exports = lazyValue;
 module.exports.touch = touch;
 
 function lazyValue(init) {
+  let toJSON = function() {
+    return undefined;
+  };
+
   let getValue = function() {
     let value = init();
 
@@ -12,6 +16,8 @@ function lazyValue(init) {
 
       value.then(
         function(result) {
+          toJSON = undefined;
+
           getValue = function() {
             return result;
           };
@@ -23,6 +29,8 @@ function lazyValue(init) {
         }
       );
     } else {
+      toJSON = undefined;
+
       getValue = function() {
         return value;
       };
@@ -34,6 +42,10 @@ function lazyValue(init) {
   return {
     get value() {
       return getValue();
+    },
+
+    get toJSON() {
+      return toJSON;
     }
   };
 }
