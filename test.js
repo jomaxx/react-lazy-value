@@ -49,6 +49,16 @@ test("renders synchronous value", done => {
   });
 });
 
+test("preloads value", () => {
+  const value = 1;
+  const init = jest.fn(async () => value);
+  const lazy = lazyValue(init);
+  expect(init).toHaveBeenCalledTimes(0);
+  lazyValue.preload(lazy);
+  lazyValue.preload(lazy);
+  expect(init).toHaveBeenCalledTimes(1);
+});
+
 class ErrorBoundary extends React.Component {
   static getDerivedStateFromError(error) {
     return { error };

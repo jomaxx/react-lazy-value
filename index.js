@@ -1,12 +1,9 @@
 module.exports = lazyValue;
+module.exports.preload = preload;
 
 function lazyValue(init) {
   let getValue = function() {
     let value = init();
-
-    getValue = function() {
-      return value;
-    };
 
     if (isThenable(value)) {
       getValue = function() {
@@ -25,6 +22,10 @@ function lazyValue(init) {
           };
         }
       );
+    } else {
+      getValue = function() {
+        return value;
+      };
     }
 
     return getValue();
@@ -35,6 +36,12 @@ function lazyValue(init) {
       return getValue();
     }
   };
+}
+
+function preload(lazy) {
+  try {
+    lazy.value;
+  } catch (error) {}
 }
 
 function isThenable(thenable) {
